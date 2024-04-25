@@ -3,4 +3,3 @@ flask_cors
 underthesea
 pandas
 requests
-gunicorn
