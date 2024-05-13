@@ -1,6 +1,7 @@
-flask
-flask_cors
-underthesea
+Flask
+flask-cors
 pandas
 requests
-maturin
+underthesea
+pickle
+warnings
