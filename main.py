@@ -27,13 +27,17 @@ def modeling(data):
             negative += 1
     return positive, negative
 
-@app.route('/api', methods=['POST'])
+@app.route('/', methods=['POST'])
 def process():
     # Nhận dữ liệu từ yêu cầu POST
-    url = request.json
+    JScall = request.get_json()
+    url = JScall['url']
     data = process_request(url)
-    result_pos, result_neg = modeling(data)
-    return jsonify(result_pos, result_neg)
+    if data.empty == False:
+        result_pos, result_neg = modeling(data)
+    else:
+        result_neg, result_pos = 0, 0
+    return jsonify({"positive": result_pos, "negative": result_neg})
 
 if __name__ == '__main__':
     app.run(debug=True)
