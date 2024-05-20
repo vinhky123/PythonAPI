@@ -1,10 +1,9 @@
 from underthesea import text_normalize
 import pandas as pd
+import numpy as np
 import re
 import string
-
-with open("stopwords.txt", 'r', encoding='utf-8') as f:
-  stopwords_set = set(line.strip() for line in f)
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 def clear_characters(text):
 
@@ -30,19 +29,6 @@ def clear_characters(text):
     text = re.sub('\w*xx+\w*', '', text)  # Remove words containing 'xx'
     return text
 
-def remove_stopwords(text):
-
-    """
-    Removing stop words
-
-    Args:
-        text (str): text need to be process
-
-    Returns:
-        text (str): result after processed
-    """
-    text = ' '.join(word for word in text.split() if word not in stopwords_set)  # Remove stopwords
-    return text
 
 def remove_long_short_words(text):
 
@@ -61,5 +47,5 @@ def remove_long_short_words(text):
 
 def preprocess(data):
     data = data[pd.notnull(data['comment'])]
-    data['comment'] = data['comment'].apply(lambda x: text_normalize(x)).apply(lambda x: clear_characters(x)).apply(lambda x: remove_stopwords(x)).apply(lambda x: remove_long_short_words(x))
+    data['comment'] = data['comment'].apply(lambda x: text_normalize(x)).apply(lambda x: clear_characters(x)).apply(lambda x: remove_long_short_words(x))
     return data

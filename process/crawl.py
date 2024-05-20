@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import re
+import numpy as np
 
 def rating_crawl(rating_json):
     rating_dict = {
@@ -88,4 +89,5 @@ def crawl_shopee_comments(url_product):
 
     data = [result[i]['comment'] for i in range(len(result))]
     data = pd.DataFrame(data, columns=['comment'])
+    data = data.loc[data['comment'] != '']
     return data
