@@ -2,7 +2,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from process import crawl as cr
 from process import preprocessing as pp
-import pickle
+from model import modeling as md
+
+import os
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -14,26 +16,27 @@ def process_request(url):
     data_processed = pp.preprocess(data)
     return data_processed
 
-def modeling(data):
-    with open('./model/model_lr.pkl', 'rb') as f:
-        model_ = pickle.load(f)
-    result = model_.predict(data['comment'])
-    positive = 0
-    negative = 0
-    for i in range(len(result)):
-        if result[i] == 1:
-            positive += 1
-        elif result[i] == 0:
-            negative += 1
-    return positive, negative
-
-@app.route('/api', methods=['POST'])
+@app.route('/', methods=['POST'])
 def process():
-    # Nhận dữ liệu từ yêu cầu POST
-    url = request.json
-    data = process_request(url)
-    result_pos, result_neg = modeling(data)
-    return jsonify(result_pos, result_neg)
+    try:
+        JScall = request.get_json()
+        url = JScall['url']
+        data = process_request(url)
+        if data.empty == False:
+            result_pos, result_neg, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = md.modeling(data)
+        else:
+            result_neg, result_pos, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = 0, 0, [], [], [], []
+        print(result_pos, result_neg, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative)
+        return jsonify({"positive": result_pos, 
+                        "negative": result_neg, 
+                        "top_positive_comments": top_comment_positive, 
+                        "top_negative_comments" : top_comment_negative,
+                        "top_positive_words": top_words_positive,
+                        "top_negative_words": top_words_negative 
+                        }), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
