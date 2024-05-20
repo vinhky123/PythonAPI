@@ -1,0 +1,7 @@
+Flask
+flask-cors
+pandas
+requests
+underthesea
+pickle
+warnings

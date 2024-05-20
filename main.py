@@ -26,6 +26,7 @@ def process():
             result_pos, result_neg, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = md.modeling(data)
         else:
             result_neg, result_pos, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = 0, 0, [], [], [], []
+        
         print(result_pos, result_neg, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative)
         return jsonify({"positive": result_pos, 
                         "negative": result_neg, 
