@@ -5,7 +5,9 @@ import re
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-def clear_characters(text):
+# Some function to normalize data for out model
+
+def text_preprocessing(text):
 
     """
     Removing special characters
@@ -29,11 +31,10 @@ def clear_characters(text):
     text = re.sub('\w*xx+\w*', '', text)  # Remove words containing 'xx'
     return text
 
-
-def remove_long_short_words(text):
+def remove_stopwords(text):
 
     """
-    Removing too long or too short words
+    Removing stop words
 
     Args:
         text (str): text need to be process
@@ -41,11 +42,26 @@ def remove_long_short_words(text):
     Returns:
         text (str): result after processed
     """
-    text = ' '.join(word for word in text.split() if len(word) > 2)  # Remove short words
-    text = ' '.join(word for word in text.split() if len(word) < 8)  # Remove long words
+    text = ' '.join(word for word in text.split() if word not in stopwords_set)  # Remove stopwords
     return text
+
+# Teen code processing
+df_teencode = pd.read_csv('./process/teencode.csv')
+teencode_dict = df_teencode.set_index('Abbreviation')['Meaning'].to_dict()
+
+def translate_teencode(text):
+    words = str(text).split()
+    translated_words = [teencode_dict.get(word, word) for word in words]
+    translated_text = ' '.join(translated_words)
+    return translated_text
+
+def remove_dub_char(text):
+    words = []
+    for word in text.strip().split():
+        words.append(re.sub(r'([A-Z])\1+', lambda m: m.group(1), word, flags = re.IGNORECASE))
+    return ' '.join(words)
 
 def preprocess(data):
     data = data[pd.notnull(data['comment'])]
-    data['comment'] = data['comment'].apply(lambda x: text_normalize(x)).apply(lambda x: clear_characters(x)).apply(lambda x: remove_long_short_words(x))
+    data['comment'] = data['comment'].apply(lambda x: text_normalize(x)).apply(lambda x: text_preprocessing(x)).apply(lambda x: translate_teencode(x)).apply(lambda x: remove_dub_char(x))
     return data

@@ -29,7 +29,7 @@ def top_comments_words(data):
 
 def modeling(data):
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    model_path = os.path.join(dir_path, 'model_lr.pkl')
+    model_path = os.path.join(dir_path, 'model_svm.pkl')
     with open(model_path, 'rb') as f:
         model_ = pickle.load(f)
     data['emotion'] = model_.predict_proba(data['comment'])[:, 1].tolist()

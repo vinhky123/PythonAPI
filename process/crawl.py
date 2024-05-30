@@ -10,8 +10,6 @@ def rating_crawl(rating_json):
     }
     return rating_dict
 
-
-
 def extract_ids_from_shopee_url(url):
     item_id_pattern = r'i\.(\d+)\.(\d+)'
     shop_id_pattern = r'i\.(\d+)\.(\d+)'
