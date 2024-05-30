@@ -5,6 +5,7 @@ from process import preprocessing as pp
 from model import modeling as md
 from matplotlib import pyplot as plt
 import time
+import io
 
 import os
 import warnings
@@ -14,14 +15,8 @@ app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
 def process_request(url):
-    start = time.time()
     data = cr.crawl_shopee_comments(url)
-    end = time.time()
-    print("Thời gian cào là: ", end - start)
-    start = time.time()
     data_processed = pp.preprocess(data)
-    end = time.time()
-    print("Thời gian xử lý là: ", end - start)
     return data_processed
 
 @app.route('/analyse', methods=['POST'])
@@ -39,7 +34,7 @@ def process():
             print("Thời gian dự đoán là: ", end - start)
         else:
             result_neg, result_pos, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = 0, 0, [], [], [], []
-        print(result_pos, result_neg, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative)
+
         return jsonify({"positive": result_pos, 
                         "negative": result_neg, 
                         "top_positive_comments": top_comment_positive, 
