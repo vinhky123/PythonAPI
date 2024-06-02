@@ -15,9 +15,9 @@ app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
 def process_request(url):
-    data = cr.crawl_shopee_comments(url)
+    data, number = cr.crawl_shopee_comments(url)
     data_processed = pp.preprocess(data)
-    return data_processed
+    return data_processed, number
 
 @app.route('/analyse', methods=['POST'])
 def process():
@@ -25,17 +25,15 @@ def process():
         JScall = request.get_json()
         url = JScall['url']
         if "https://shopee.vn/" not in url:
-            return jsonify({"error": "URL is not from Shopee"}), 400
-        data = process_request(url)
+            return jsonify({"error": "URL is not from Shopee"}), 200
+        data, number = process_request(url)
         if data.empty == False:
-            start = time.time()
             result_pos, result_neg, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = md.modeling(data)
-            end = time.time()
-            print("Thời gian dự đoán là: ", end - start)
         else:
             result_neg, result_pos, top_comment_positive, top_comment_negative, top_words_positive, top_words_negative = 0, 0, [], [], [], []
 
-        return jsonify({"positive": result_pos, 
+        return jsonify({"number_comment": number,
+                        "positive": result_pos, 
                         "negative": result_neg, 
                         "top_positive_comments": top_comment_positive, 
                         "top_negative_comments" : top_comment_negative,

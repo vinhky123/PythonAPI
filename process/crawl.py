@@ -87,5 +87,6 @@ def crawl_shopee_comments(url_product):
 
     data = [result[i]['comment'] for i in range(len(result))]
     data = pd.DataFrame(data, columns=['comment'])
+    number = len(data)
     data = data.loc[data['comment'] != '']
-    return data
+    return data, number
